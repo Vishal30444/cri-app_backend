@@ -24,7 +24,7 @@ exports.register = async (req, res) => {
       });
     }
 
-    const { name, email, password } = req.body;
+    const { name, email, organization, designation, password } = req.body; // Added new fields
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -35,14 +35,22 @@ exports.register = async (req, res) => {
       });
     }
 
-    // Create user
+    // Create user with new fields
     const user = await User.create({
       name,
       email,
+      organization,  // New field
+      designation,   // New field
       password
     });
 
-    // await sendEmail('welcome-email', user);
+    // Send welcome email
+    // try {
+    //   await sendEmail('welcome-email', user);
+    // } catch (emailError) {
+    //   console.error('Welcome email failed:', emailError);
+    //   // Don't fail registration if email fails
+    // }
 
     res.status(201).json({
       success: true,
@@ -52,6 +60,8 @@ exports.register = async (req, res) => {
           id: user._id,
           name: user.name,
           email: user.email,
+          organization: user.organization,
+          designation: user.designation,
           status: user.status
         }
       }
